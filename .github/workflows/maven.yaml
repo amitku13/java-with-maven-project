@@ -13,21 +13,37 @@ jobs:
     runs-on: ubuntu-latest  # Use the latest Ubuntu runner
 
     steps:
-    # Step 1: Checkout the code from the repository
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      # Step 1: Checkout the code from the repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    # Step 2: Set up JDK 17 (Temurin distribution)
-    - name: Set up JDK 17 (Temurin)
-      uses: actions/setup-java@v2
-      with:
-        java-version: '17'
-        distribution: 'temurin'  # Use Eclipse Temurin JDK distribution
+      # Step 2: Set up JDK 17 (Temurin distribution)
+      - name: Set up JDK 17 (Temurin)
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'  # Use Eclipse Temurin JDK distribution
 
-    # Step 3: Cache Maven dependencies to speed up builds
-    - name: Cache Maven dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore
+      # Step 3: Cache Maven dependencies to speed up builds
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Step 4: Build the project using Maven
+      - name: Build with Maven
+        run: mvn clean install
+
+      # Step 5: Run tests using Maven
+      - name: Run tests with Maven
+        run: mvn test
+
+      # Optional Step 6: Deploy to a server or artifact repository (if necessary)
+      # You can add steps here to deploy the application after a successful build/test.
+      # For example, deploying to AWS, Docker Hub, or Maven Central.
+      # Here's an example for deploying to Maven Central:
+      # - name: Deploy to Maven Central
+      #   run: mvn deploy -DskipTests
